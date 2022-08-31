@@ -1,0 +1,73 @@
+--how much each rock band made?
+SELECT a.Name as "Artist",
+       sum(il.UnitPrice) AS "Total"
+FROM Artist a
+JOIN Album al ON a.ArtistId = al.ArtistId
+JOIN Track t ON  al.AlbumId = t.AlbumId
+JOIN InvoiceLine il ON t.TrackId = il.TrackId
+GROUP BY 1
+ORDER BY 2 DESC
+
+--the most popular music Genre in each country
+WITH t1 AS
+  (SELECT BillingCountry AS country,
+          g.Name AS name,
+          g.genreid AS Genreid,
+          count(InvoiceLineId) AS purchases
+   FROM Invoice i
+   JOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId
+   JOIN Track t ON il.TrackId = t.TrackId
+   JOIN Genre g ON t.GenreId = g.GenreId
+   GROUP BY 1,
+            2),
+     t2 AS
+  (SELECT country,
+          name,
+          MAX(purchases) maximum
+   FROM t1
+   GROUP BY 1)
+SELECT t1.country,
+       t1.name,
+       t1.Genreid,
+       t1.purchases
+FROM t1
+JOIN t2 ON t1.country=t2.country
+AND t1.purchases=t2.maximum
+ORDER BY 1,
+         4 DESC 
+
+--no of tracks in each music genre that has been purcahesed more than ONE time
+WITH t1 AS
+  (SELECT i.TrackId,
+          count(i.TrackId) AS "count",
+          g.Name "Genre"
+   FROM InvoiceLine i
+   JOIN Track t ON i.TrackId = t.TrackId
+   JOIN Genre g ON t.GenreId = g.GenreId 
+   GROUP BY 1
+   HAVING "count" > 1)
+SELECT t1.Genre,
+       count(t1.TrackId) AS "No. of Tracks"
+FROM t1
+GROUP BY 1
+HAVING Genre NOT IN("Science Fiction", "TV Shows", "Sci Fi & Fantasy", "Drama", "Comedy") 
+ORDER BY 2 DESC 
+
+--Shows profit
+SELECT a.Title "Show",
+       g.Name "Genre",
+       sum(i.unitprice) "profit"
+FROM Track t
+JOIN InvoiceLine i ON t.TrackId = i.TrackId
+JOIN Genre g ON t.GenreId = g.GenreId
+JOIN Album a ON t.AlbumId = a.AlbumId
+JOIN Artist r ON a.ArtistId = r.ArtistId
+WHERE g.Name IN("Science Fiction",
+                "TV Shows",
+                "Sci Fi & Fantasy",
+                "Drama",
+                "Comedy")
+GROUP BY 1
+ORDER BY 3 DESC 
+ 
+
