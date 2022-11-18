@@ -1,4 +1,4 @@
---how much each rock band made?
+--How much each rock band made?
 SELECT a.Name as "Artist",
        sum(il.UnitPrice) AS "Total"
 FROM Artist a
@@ -8,7 +8,7 @@ JOIN InvoiceLine il ON t.TrackId = il.TrackId
 GROUP BY 1
 ORDER BY 2 DESC
 
---the most popular music Genre in each country
+--The most popular music Genre in each country
 WITH t1 AS
   (SELECT BillingCountry AS country,
           g.Name AS name,
@@ -36,7 +36,7 @@ AND t1.purchases=t2.maximum
 ORDER BY 1,
          4 DESC 
 
---no of tracks in each music genre that has been purcahesed more than ONE time
+--No of tracks in each music genre that has been purcahesed more than ONE time
 WITH t1 AS
   (SELECT i.TrackId,
           count(i.TrackId) AS "count",
@@ -53,7 +53,7 @@ GROUP BY 1
 HAVING Genre NOT IN("Science Fiction", "TV Shows", "Sci Fi & Fantasy", "Drama", "Comedy") 
 ORDER BY 2 DESC 
 
---Shows profit
+--The profit of the shows
 SELECT a.Title "Show",
        g.Name "Genre",
        sum(i.unitprice) "profit"
